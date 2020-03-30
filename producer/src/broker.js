@@ -5,22 +5,23 @@ module.exports.start = async () => {
   const connection = await amqp.connect(process.env.MESSAGE_QUEUE);
 
   const channel = await connection.createChannel();
-  await channel.assertQueue('tasks', { durable: true });
 
-  Array(10)
+  const exchange = 'orders';
+  let msg = process.argv.slice(2).join(' ') || 'Hello World!';
+  await channel.assertExchange(exchange, 'direct', { durable: true });
+  // await channel.assertQueue('tasks', { durable: true });
+
+  Array(100)
     .fill()
     .map(async (x, y) => {
-      const task = { message: `Task ${y}` };
+      const msg = 'Hello World! ' + y.toString()
+      await channel.publish(exchange, 'black', Buffer.from(msg));
 
-      await channel.sendToQueue('tasks', Buffer.from(JSON.stringify(task)), {
-        contentType: 'application/json',
-        persistent: true
-      });
+      console.log("exchange %s [%s] Sent message %s", exchange, y + 1, msg);
 
-      winston.info(`Task ${y} sent!`);
     });
 
   setTimeout(() => {
     connection.close();
-  }, 3000);
+  }, 3);
 };

@@ -8,4 +8,7 @@ VOLUME [ "/usr/src/app" ]
 
 RUN npm install -g nodemon
 
-CMD [ "nodemon", "-L", "src/index.js" ]
+COPY ./entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+

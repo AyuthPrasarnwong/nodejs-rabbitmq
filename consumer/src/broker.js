@@ -13,7 +13,7 @@ module.exports.start = async () => {
   winston.info('Waiting tasks...');
 
   channel.consume('tasks', async (message) => {
-    await delay(1000);
+    await delay(1);
 
     const content = message.content.toString();
     const task = JSON.parse(content);
